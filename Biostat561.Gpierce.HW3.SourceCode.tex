@@ -1,0 +1,345 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={Homework 3 Source Code},
+  pdfauthor={Gavin Pierce},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Homework 3 Source Code}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Biostat 561}
+\author{Gavin Pierce}
+\date{2023-04-26}
+
+\begin{document}
+\maketitle
+
+/* I have a resume I'm pretty comfortable with, so I opted to use this
+as an exercise in deepening my understanding of LateX and exploring
+Overleaf.
+
+The source code contains many of the authors original comments, but I
+did have a fair amount of modifying to do to fit my needs.
+
+Please enjoy my most recent photo of Miko smiling
+\textgreater.\textless{}
+
+\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\% \% This is an sample CV template
+created using altacv.cls \% (v1.6.5, 3 Nov 2022) written by LianTze Lim
+(\href{mailto:liantze@gmail.com}{\nolinkurl{liantze@gmail.com}}).
+Compiles with pdfLaTeX, XeLaTeX and LuaLaTeX. \% \%\% It may be
+distributed and/or modified under the \%\% conditions of the LaTeX
+Project Public License, either version 1.3 \%\% of this license or (at
+your option) any later version. \%\% The latest version of this license
+is in \%\% \url{http://www.latex-project.org/lppl.txt} \%\% and version
+1.3 or later is part of all distributions of LaTeX \%\% version
+2003/12/01 or later. \%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%
+
+\%\% Use the ``normalphoto'' option if you want a normal photo instead
+of cropped to a circle \%
+
+\documentclass[10pt,a4paper,normalphoto]{altacv}
+
+\documentclass[10pt,a4paper,ragged2e,withhyper]{altacv}
+%% AltaCV uses the fontawesome5 and packages.
+%% See http://texdoc.net/pkg/fontawesome5 for full list of symbols.
+
+% Change the page layout if you need to
+\geometry{left=1.25cm,right=1.25cm,top=1.5cm,bottom=1.5cm,columnsep=1.2cm}
+
+% The paracol package lets you typeset columns of text in parallel
+\usepackage{paracol}
+
+% Change the font if you want to, depending on whether
+% you're using pdflatex or xelatex/lualatex
+\ifxetexorluatex
+  % If using xelatex or lualatex:
+  \setmainfont{Roboto Slab}
+  \setsansfont{Lato}
+  \renewcommand{\familydefault}{\sfdefault}
+\else
+  % If using pdflatex:
+  \usepackage[rm]{roboto}
+  \usepackage[defaultsans]{lato}
+  % \usepackage{sourcesanspro}
+  \renewcommand{\familydefault}{\sfdefault}
+\fi
+
+% Change the colours if you want to
+\definecolor{SlateGrey}{HTML}{2E2E2E}
+\definecolor{LightGrey}{HTML}{666666}
+\definecolor{DarkPastelRed}{HTML}{450808}
+\definecolor{PastelRed}{HTML}{8F0D0D}
+\definecolor{GoldenEarth}{HTML}{E7D192}
+\colorlet{name}{black}
+\colorlet{tagline}{PastelRed}
+\colorlet{heading}{DarkPastelRed}
+\colorlet{headingrule}{GoldenEarth}
+\colorlet{subheading}{PastelRed}
+\colorlet{accent}{PastelRed}
+\colorlet{emphasis}{SlateGrey}
+\colorlet{body}{LightGrey}
+
+% Change some fonts, if necessary
+\renewcommand{\namefont}{\Huge\rmfamily\bfseries}
+\renewcommand{\personalinfofont}{\footnotesize}
+\renewcommand{\cvsectionfont}{\LARGE\rmfamily\bfseries}
+\renewcommand{\cvsubsectionfont}{\large\bfseries}
+
+
+% Change the bullets for itemize and rating marker
+% for \cvskill if you want to
+\renewcommand{\itemmarker}{{\small\textbullet}}
+\renewcommand{\ratingmarker}{\faCircle}
+
+%% Use (and optionally edit if necessary) this .tex if you
+%% want to use an author-year reference style like APA(6)
+%% for your publication list
+% \input{pubs-authoryear}
+
+%% Use (and optionally edit if necessary) this .tex if you
+%% want an originally numerical reference style like IEEE
+%% for your publication list
+\input{pubs-num}
+
+%% sample.bib contains your publications
+\addbibresource{sample.bib}
+
+\begin{document}
+\name{Gavin K Pierce}
+\tagline{Aspiring Statistician }
+%% You can add multiple photos on the left or right
+\photoR{2.8cm}{SmileyCat}
+% \photoL{2.5cm}{Yacht_High,Suitcase_High}
+
+\personalinfo{%
+  % Not all of these are required!
+  \email{gavinkpierce@gmail.com}
+  \phone{206-290-6900}
+  \mailaddress{4558 7th Ave NE Apt 302, Seattle, WA 98105}
+  \homepage{https://gkpierce.github.io/.com}
+  \linkedin{/in/gavin-pierce-5a1a3625/}
+  \github{/gkpierce}
+  %% You can add your own arbitrary detail with
+  %% \printinfo{symbol}{detail}[optional hyperlink prefix]
+  % \printinfo{\faPaw}{Hey ho!}[https://example.com/]
+  %% Or you can declare your own field with
+  %% \NewInfoFiled{fieldname}{symbol}[optional hyperlink prefix] and use it:
+  % \NewInfoField{gitlab}{\faGitlab}[https://gitlab.com/]
+  % \gitlab{your_id}
+  %%
+  %% For services and platforms like Mastodon where there isn't a
+  %% straightforward relation between the user ID/nickname and the hyperlink,
+  %% you can use \printinfo directly e.g.
+  % \printinfo{\faMastodon}{@username@instace}[https://instance.url/@username]
+  %% But if you absolutely want to create new dedicated info fields for
+  %% such platforms, then use \NewInfoField* with a star:
+  % \NewInfoField*{mastodon}{\faMastodon}
+  %% then you can use \mastodon, with TWO arguments where the 2nd argument is
+  %% the full hyperlink.
+  % \mastodon{@username@instance}{https://instance.url/@username}
+}
+
+\makecvheader
+%% Depending on your tastes, you may want to make fonts of itemize environments slightly smaller
+% \AtBeginEnvironment{itemize}{\small}
+
+%% Set the left/right column width ratio to 6:4.
+\columnratio{0.6}
+
+% Start a 2-column paracol. Both the left and right columns will automatically
+% break across pages if things get too long.
+\begin{paracol}{2}
+\cvsection{Experience}
+
+\cvevent{General Manager}{Room 11}{September 2015 -- March 2020}{Washington D.C.}
+\begin{itemize}
+\item Directly responsible for business operations \& team management
+\item Oversight of \$1,000,000+ in annual sales
+\item Led professional development for staff of 20+ employees
+\item Installed and programmed Breadcrumb POS system
+\end{itemize}
+
+\divider
+
+\cvevent{Hospitality Consultant}{Self-Employed}{August 2015 -- Present}{Washington D.C. / Seattle, WA}
+\begin{itemize}
+\item Amone | 2023
+\item Bad Saint | 2015-2020
+\item Lucy Bar | 2022
+\item La Tejana | 2019
+\item Sally's Middle Name | 2018
+\end{itemize}
+
+\cvsection{Academia}
+
+\cvevent{Teaching Assistant | Department of Biostatistics}{University of Washington}{Winter \& Spring 2023}{}
+\begin{itemize}
+\item Health Sciences Biometry | Instructor: Allison Meisner, Ph.D.
+\end{itemize}
+
+\divider
+
+\cvevent{Teaching Assistant | Department of Biostatistics}{University of Washington}{Fall 2022}{}
+\begin{itemize}
+\item Medical Biometry | Instructor: Lurdes Inoue, Ph.D.
+\end{itemize}
+
+\medskip
+
+\cvsection{A Day of My Life}
+
+% Adapted from @Jake's answer from http://tex.stackexchange.com/a/82729/226
+% \wheelchart{outer radius}{inner radius}{
+% comma-separated list of value/text width/color/detail}
+\wheelchart{1.5cm}{0.5cm}{%
+  6/8em/accent!30/{Sleep,\\ never enough sleep},
+  1/10em/accent/Sports ball and "relaxation",
+  3/8em/accent!40/Night: More school,
+  8/8em/accent!60/Daytime: School,
+  2/6em/accent!20/Spending time with family
+}
+
+% use ONLY \newpage if you want to force a page break for
+% ONLY the current column
+\newpage
+
+
+%% Switch to the right column. This will now automatically move to the second
+%% page if the content is too long.
+\switchcolumn
+
+\cvsection{A Quote}
+
+\begin{quote}
+``Talent may get you on the field, but it's effort \& attitude that keep you there''  Ken Griffey Jr.
+\end{quote}
+
+\cvsection{Most Proud of}
+
+\cvachievement{\faHeartbeat}{AmeriCorps Volunteer}{City Year New York 2010}
+
+\divider
+
+\cvachievement{\faHeartbeat}{Bon Appetit Contributor}{Original Cocktail Design}
+
+\divider
+
+\cvachievement{\faHeartbeat}{Baseball Card Collection}{Age 6-12 | Lost Many Years Ago}
+
+\cvsection{Strengths}
+
+\cvtag{Applied Creativity}
+\cvtag{Public Engagement}\\
+\cvtag{Project Design \& Implementation}
+
+\divider\smallskip
+
+\cvtag{R}
+\cvtag{SQL}
+\cvtag{Matlab}
+\cvtag{LaTeX}\\
+\cvtag{Python}
+\cvtag{Excel}
+
+\cvsection{Education}
+
+\cvevent{M.Sc.\ Biostatistics}{University of Washington}{Sept 2022 - Present}{}
+Data Science Track
+
+\divider
+
+\cvevent{B.Sc.\ Mathematics}{University of the District of Columbia}{Sept 2019 -- May 2022}{}
+
+\divider
+
+\cvsection{Languages}
+
+\cvskill{English}{5}
+\divider
+
+\cvskill{Mandarin}{1.0}
+\divider
+
+\cvskill{Spanish}{1.0}
+\divider
+
+\cvskill{German}{1.0} %% Supports X.5 values.
+
+%% Yeah I didn't spend too much time making all the
+%% spacing consistent... sorry. Use \smallskip, \medskip,
+%% \bigskip, \vspace etc to make adjustments.
+\medskip
+
+
+
+\end{paracol}
+
+
+\end{document}
+*/
+
+\end{document}
