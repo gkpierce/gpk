@@ -1,3 +1,15 @@
-I LIKE CATS
-CATS SEEM TO LIKE ME
-COULD BE WORSE
+Package: GPfirstever
+Type: Package
+Title: A Gud Package Doing Gud Boi Stuff
+Version: 0.1.0
+Author: Garvin
+Maintainer: Gavin Pierce <gavinkpierce@gmail.com>
+Description: Ehhhhhh not much yet
+License: MI(ne)
+Encoding: UTF-8
+RoxygenNote: 7.2.3
+Suggests: testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Imports: tidyverse
+NeedsCompilation: no
+Packaged: 2023-05-04 06:53:59 UTC; gavinpierce
