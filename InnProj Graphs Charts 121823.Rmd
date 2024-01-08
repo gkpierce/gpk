@@ -1,0 +1,254 @@
+---
+title: 'Graphs & Charts: Inn Proj 12/18/23'
+author: "Gavin Pierce"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    df_print: paged
+  pdf_document:
+    fig_caption: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(knitr)
+library(ggplot2)
+library(dplyr)
+library(ggrepel)
+library(stringr)
+library(devtools)
+library(echarts4r)
+library(echarts4r.assets)
+library(waffle)
+library(hrbrthemes)
+
+inn_pro <- read_csv("UMIPdata.csv")
+boj <-read_csv("BoJ Incarcerations Comp (2012-21).csv")
+
+```
+
+```{r fig1, fig.width=7, fig.height=3, fig.cap= "U.S. Exoneration Trends: Innocence Organization and Conviction Integrity Unit Involvement", echo=FALSE, warning=FALSE, message=FALSE}
+
+# Count exonerations per year
+exonerations_per_year <- inn_pro %>%
+  group_by(Exonerated) %>%
+  tally(name = "total_exonerations")
+
+# Count IO, CIU, and DNA tags by year
+io_counts <- inn_pro %>%
+  separate_rows(Tags, sep = ";") %>%
+  filter(str_detect(Tags, "IO")) %>%
+  group_by(Exonerated) %>%
+  tally(name = "IO_count")
+
+ciu_counts <- inn_pro %>%
+  separate_rows(Tags, sep = ";") %>%
+  filter(str_detect(Tags, "CIU")) %>%
+  group_by(Exonerated) %>%
+  tally(name = "CIU_count")
+
+dna_counts <- inn_pro %>%
+  filter(DNA == "DNA") %>%
+  group_by(Exonerated) %>%
+  tally(name = "DNA_count")
+
+io_ciu_counts <- inn_pro %>%
+  separate_rows(Tags, sep = ";") %>%
+  filter(str_detect(Tags, "IO") | str_detect(Tags, "CIU")) %>%
+  group_by(Exonerated) %>%
+  tally(name = "IO_CIU_count")
+
+# Join all counts
+annual_counts <- left_join(exonerations_per_year, io_counts, by = "Exonerated") %>%
+  left_join(ciu_counts, by = "Exonerated") %>%
+  left_join(dna_counts, by = "Exonerated") %>%
+  replace_na(list(IO_count = 0, CIU_count = 0, DNA_count = 0))
+
+# Join the new count
+annual_counts <- annual_counts %>%
+  left_join(io_ciu_counts, by = "Exonerated") %>%
+  replace_na(list(IO_CIU_count = 0))
+
+
+# Compute counts for cases without IO, DNA, or CIU tags for each year
+annual_counts$no_tags_count <- annual_counts$total_exonerations - (annual_counts$IO_count + annual_counts$DNA_count + annual_counts$CIU_count)
+
+# Make sure no_tags_count doesn't go negative (it shouldn't, but just to be safe)
+annual_counts$no_tags_count[annual_counts$no_tags_count < 0] <- 0
+
+ggplot(annual_counts, aes(x = Exonerated)) +
+  geom_bar(aes(y = total_exonerations, fill = "Total Exonerations"), stat = "identity", alpha = 0.6) +
+  geom_line(aes(y = IO_count, color = "Innocence Organization", group = 1), size = 1) +
+  geom_line(aes(y = CIU_count, color = "Conviction Integrity Unit", group = 1), size = 1) +
+  geom_line(aes(y = no_tags_count, color = "No IO or CIU", group = 1), size = 1, linetype = "dashed") +
+  geom_line(aes(y = IO_CIU_count, color = "At least one IO or CIU", group = 1), size = 1, linetype = "longdash") +
+  labs(x = "Year", y = "Annual Exonerations", title = "U.S. Exoneration Trends: Innocence Organization and Conviction Integrity Unit Involvement") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = "grey50", name = "Annual U.S. Count") +
+  scale_color_manual(values = c("olivedrab","goldenrod2", "purple2", "black"), name = "Variables of Interest") +
+  guides(fill = guide_legend(override.aes = list(alpha = 1)))
+
+
+#  geom_line(aes(y = DNA_count, color = "DNA", group = 1), size = 1) +
+# , "darkviolet"
+# ,, title = "Annual U.S. Exonerations Overlaid with CIU & IOs"
+
+```
+
+```{r, fig.width=6, fig.height= 4, echo=FALSE}
+
+## IO Layered on Exons by State
+
+
+inn_pro_filtered <- inn_pro %>%
+  filter(Exonerated >= 2012, Exonerated <= 2021)
+
+# Now apply the rest of your operations on this filtered dataset
+
+# Count of total exonerations per state
+total_exonerations <- inn_pro_filtered %>%
+  group_by(State) %>%
+  summarise(total_n = n(), .groups = "drop")
+
+# Count of 'IO' tags per state
+io_counts <- inn_pro_filtered %>%
+  filter(str_detect(Tags, "IO")) %>%
+  group_by(State) %>%
+  summarise(io_n = n(), .groups = "drop")
+
+# Merge the two data frames
+merged_data <- left_join(total_exonerations, io_counts, by = "State")
+
+# Replace NAs in io_n with 0
+merged_data$io_n[is.na(merged_data$io_n)] <- 0
+
+# Filter out Federal cases
+filtered_data <- merged_data %>% 
+  filter(!str_starts(State, "Fed"))
+
+######
+custom_colors <- c("Total Exonerations" = "gray46", "Innocence Organization Involvement" = "darkorchid1")
+
+ggplot(filtered_data, aes(x = reorder(State, -total_n))) +
+  geom_bar(aes(y = total_n, fill = "Total Exonerations"), stat = "identity") +
+  geom_bar(aes(y = io_n, fill = "Innocence Organization Involvement"), stat = "identity") +
+  labs(x = "State", y = "Number of Exonerations", title = "Innocence Organization Involvement: Exonerations from 2012-2021", fill = "Legend") + theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 60, hjust = 1, size = 8),
+    legend.position = "right",
+    legend.text = element_text(size = 10), # Adjust text size in the legend
+    legend.key.size = unit(0.5, "cm") # Adjust size of the keys in the legend
+  ) +
+  scale_fill_manual(values = custom_colors)
+
+# title = "Total Exonerations and 'IO' Tags by State"
+```
+
+```{r, fig.width=7, fig.height=3, echo=FALSE}
+
+boj <- boj %>% 
+  rename(State = ...1)
+
+boj$State <- reorder(boj$State, boj$Exons100k)
+
+ggplot(boj, aes(x = State, y = Exons100k, fill = factor(IO_binary)))+
+  geom_bar(stat="identity")+
+  scale_fill_manual(values = c("red", "lightsteelblue3", "gray"), labels = c("No IO", "IO", "USA")) +
+  labs(x = "States", y = "Exonerations Per 100k Incarceration Years", title = "U.S. Exoneration Rates: 2012-2021") +
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1, size=8))+
+  guides(fill = guide_legend(title = "Innocence Org."))
+
+
+```
+
+
+
+$$\underline{Washington \space State} \space \\2012: 17,271  \space individuals \space in \space prison \\
+2013: 17,984  \space individuals \space in \space prison\\
+2014: 18,120  \space individuals \space in \space prison \\
+2015: 18,284  \space individuals \space in \space prison \\
+2016: 19,104  \space individuals \space in \space prison \\
+2017: 19,656  \space individuals \space in \space prison \\
+2018: 19,523  \space individuals \space in \space prison \\
+2019: 19,261  \space individuals \space in \space prison \\
+2020: 15,724  \space individuals \space in \space prison \\
+2021: 13,674  \space individuals \space in \space prison \\
+Total \space(2012-2021) = 178,601 \space Incarceration \space Years \\
+\\
+
+$$
+
+
+$$\underline{Washington \space State \space (2012-2021):}\\
+\\
+
+\frac{20 \space exonerations}{178,601 \space incarceration \space years } = \frac{11.20 \space exonerations}{100,000 \space incarceration \space years}$$
+
+
+
+
+```{r, echo=FALSE, eval=FALSE}
+
+
+# Your provided data
+df22 <- data.frame(
+  x = c("North Carolina", "South Carolina", "Adjusted: S. Carolina"),
+  y = c(43, 5, 26)
+)
+
+# Convert 'x' to a factor with levels in the order they appear in the original data frame
+df22$x <- factor(df22$x, levels = df22$x)
+
+# Make it longer for each person
+df_long <- df22 %>%
+  rowwise() %>%
+  summarize(x = x, value = list(seq(y)))
+
+df_long <- unnest(df_long, cols = c(value))
+
+# Create an Echarts4r plot
+df_long %>%
+  e_charts(x) %>% 
+  e_bar(value, stack = "total") %>% 
+  e_tooltip(trigger = "axis") %>% 
+  e_title("North vs South Carolina Comparison") %>% 
+  e_x_axis(type = "category", axisLabel = list(rotate = 45)) %>% 
+  e_y_axis(name = "Value") 
+
+
+```
+```{r, echo=FALSE}
+
+# Your provided data
+df22 <- data.frame(
+  x = c("Adjusted \n South Carolina \n (Rate: 12.38)", "South Carolina \n (Rate: 2.54)", "North Carolina \n (Rate: 12.38)"),
+  y = c(26, 5, 43)
+)
+
+# Create a pictorial bar chart with people icons
+df22 %>% 
+  e_charts(x) %>% 
+  e_pictorial(y, symbol = ea_icons("user"), 
+              symbolRepeat = TRUE, z = -1,
+              symbolSize = c(14, 15),
+              itemStyle = list(color = "darkorchid")) %>% 
+  e_theme("westeros") %>%
+  e_title("North Carolina vs. South Carolina Exonerations (2012-2021)", textStyle = list(color = "black")) %>%
+  e_flip_coords() %>%
+  e_legend(show = FALSE) %>%
+  e_x_axis(splitLine = list(show = FALSE), axisLabel = list(rotate = 0, textStyle = list(color = "black"))) %>%
+  e_y_axis(splitLine = list(show = FALSE), axisLabel = list(textStyle = list(color = "black"))) %>%  
+  e_labels(fontSize = 16, fontWeight = 'bold', position = "right", offset = c(10, 0))
+
+
+```
+\newpage
+
+## Code Appendix
+
+```{r, ref.label=knitr::all_labels(),echo=TRUE,eval=FALSE}
+```
